@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { X, Link as LinkIcon, Plus, Trash2, Calendar, Clock, Save } from 'lucide-react'
+import { X, Link as LinkIcon, Plus, Trash2, Calendar, Save } from 'lucide-react'
 import { Scholarship, ScholarshipInsert, ScholarshipStatus } from '@/types/database'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'

@@ -1,4 +1,3 @@
-import React from 'react'
 import { Calendar, ExternalLink, Edit, Trash2, Clock } from 'lucide-react'
 import { Scholarship } from '@/types/database'
 

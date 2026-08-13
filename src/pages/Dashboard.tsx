@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Search, Plus, LogOut, GraduationCap, Filter } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
@@ -15,7 +15,7 @@ const FILTER_OPTIONS: { value: ScholarshipStatus | 'all'; label: string }[] = [
 ]
 
 export default function Dashboard() {
-  const { user, signOut } = useAuth()
+  const { signOut } = useAuth()
   const [scholarships, setScholarships] = useState<Scholarship[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
