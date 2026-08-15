@@ -1,60 +1,45 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { User, Session } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
 
 interface AuthContextType {
-  user: User | null
-  session: Session | null
+  isAuthenticated: boolean
   loading: boolean
-  signIn: (email: string, password: string) => Promise<void>
-  signUp: (email: string, password: string) => Promise<void>
-  signOut: () => Promise<void>
+  signIn: (code: string) => boolean
+  signOut: () => void
 }
+
+const SECRET_CODE = import.meta.env.VITE_SECRET_CODE || '123456'
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [session, setSession] = useState<Session | null>(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
-
-    return () => subscription.unsubscribe()
+    // Check if user is already authenticated
+    const authStatus = localStorage.getItem('scholarships_auth')
+    if (authStatus === 'authenticated') {
+      setIsAuthenticated(true)
+    }
+    setLoading(false)
   }, [])
 
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) throw error
+  const signIn = (code: string): boolean => {
+    if (code === SECRET_CODE) {
+      setIsAuthenticated(true)
+      localStorage.setItem('scholarships_auth', 'authenticated')
+      return true
+    }
+    return false
   }
 
-  const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({ email, password })
-    if (error) throw error
-  }
-
-  const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    if (error) throw error
+  const signOut = () => {
+    setIsAuthenticated(false)
+    localStorage.removeItem('scholarships_auth')
   }
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ isAuthenticated, loading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   )

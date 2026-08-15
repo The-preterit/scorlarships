@@ -5,8 +5,8 @@ import Dashboard from '@/pages/Dashboard'
 import Share from '@/pages/Share'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth()
-  
+  const { isAuthenticated, loading } = useAuth()
+
   if (loading) {
     return (
       <div className="min-h-screen bg-primary-900 flex items-center justify-center">
@@ -14,12 +14,12 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
       </div>
     )
   }
-  
-  return user ? <>{children}</> : <Navigate to="/auth" replace />
+
+  return isAuthenticated ? <>{children}</> : <Navigate to="/auth" replace />
 }
 
 function AppRoutes() {
-  const { user, loading } = useAuth()
+  const { isAuthenticated, loading } = useAuth()
 
   if (loading) {
     return (
@@ -31,7 +31,7 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/auth" element={user ? <Navigate to="/" replace /> : <Auth />} />
+      <Route path="/auth" element={isAuthenticated ? <Navigate to="/" replace /> : <Auth />} />
       <Route
         path="/"
         element={

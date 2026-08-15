@@ -60,12 +60,12 @@ export default function ScholarshipCard({ scholarship, onEdit, onDelete }: Schol
   const { text: timeText, urgent } = getTimeRemaining(scholarship.deadline)
 
   return (
-    <div className="bg-primary-800/50 border border-primary-700/50 rounded-xl p-4 hover:border-primary-600 transition-all">
+    <div className="bg-white border border-gray-200 rounded-xl p-4 hover:border-blue-300 hover:shadow-md transition-all">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-white mb-1">{scholarship.title}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-1">{scholarship.title}</h3>
           {scholarship.organization && (
-            <p className="text-sm text-primary-400">{scholarship.organization}</p>
+            <p className="text-sm text-gray-500">{scholarship.organization}</p>
           )}
         </div>
         <span className={`${status.bg} text-white text-xs px-2 py-1 rounded-full`}>
@@ -74,15 +74,15 @@ export default function ScholarshipCard({ scholarship, onEdit, onDelete }: Schol
       </div>
 
       {scholarship.description && (
-        <p className="text-sm text-primary-300 mb-3 line-clamp-2">{scholarship.description}</p>
+        <p className="text-sm text-gray-600 mb-3 line-clamp-2">{scholarship.description}</p>
       )}
 
       <div className="flex items-center gap-4 mb-3">
         <div className="flex items-center gap-1.5 text-sm">
-          <Calendar className="w-4 h-4 text-primary-400" />
-          <span className="text-primary-300">{formatDate(scholarship.deadline)}</span>
+          <Calendar className="w-4 h-4 text-gray-400" />
+          <span className="text-gray-600">{formatDate(scholarship.deadline)}</span>
         </div>
-        <div className={`flex items-center gap-1.5 text-sm ${urgent ? 'text-yellow-400' : 'text-primary-300'}`}>
+        <div className={`flex items-center gap-1.5 text-sm ${urgent ? 'text-orange-600 font-medium' : 'text-gray-600'}`}>
           <Clock className="w-4 h-4" />
           <span>{timeText}</span>
         </div>
@@ -96,7 +96,7 @@ export default function ScholarshipCard({ scholarship, onEdit, onDelete }: Schol
               href={link}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs text-primary-400 hover:text-white transition-colors"
+              className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
             >
               <ExternalLink className="w-3 h-3" />
               Lien {index + 1}
@@ -106,20 +106,20 @@ export default function ScholarshipCard({ scholarship, onEdit, onDelete }: Schol
       )}
 
       {scholarship.notes && (
-        <p className="text-xs text-primary-400 mb-3 italic line-clamp-1">{scholarship.notes}</p>
+        <p className="text-xs text-gray-500 mb-3 italic line-clamp-1">{scholarship.notes}</p>
       )}
 
-      <div className="flex gap-2 pt-2 border-t border-primary-700/50">
+      <div className="flex gap-2 pt-2 border-t border-gray-200">
         <button
           onClick={onEdit}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 text-sm text-primary-300 hover:text-white hover:bg-primary-700/50 rounded-lg transition-all"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
         >
           <Edit className="w-4 h-4" />
           Modifier
         </button>
         <button
           onClick={onDelete}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all"
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all"
         >
           <Trash2 className="w-4 h-4" />
           Supprimer
