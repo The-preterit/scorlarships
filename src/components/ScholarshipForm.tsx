@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { X, Link as LinkIcon, Plus, Trash2, Calendar, Save } from 'lucide-react'
 import { Scholarship, ScholarshipInsert, ScholarshipStatus } from '@/types/database'
 import { supabase } from '@/lib/supabase'
-import { useAuth } from '@/contexts/AuthContext'
 
 interface ScholarshipFormProps {
   scholarship?: Scholarship
@@ -30,8 +29,10 @@ const REMINDER_OPTIONS = [
   { days: 1, label: '1 jour avant' },
 ]
 
+// Default user ID for personal use
+const DEFAULT_USER_ID = '00000000-0000-0000-0000-000000000000'
+
 export default function ScholarshipForm({ scholarship, initialData, onClose, onSave }: ScholarshipFormProps) {
-  const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     title: scholarship?.title || initialData?.title || initialData?.text?.split('\n')[0] || '',
@@ -69,7 +70,6 @@ export default function ScholarshipForm({ scholarship, initialData, onClose, onS
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!user) return
 
     setLoading(true)
     try {
@@ -105,7 +105,7 @@ export default function ScholarshipForm({ scholarship, initialData, onClose, onS
         // Create new scholarship
         const { data, error } = await supabase
           .from('scholarships')
-          .insert({ ...scholarshipData, user_id: user.id })
+          .insert({ ...scholarshipData, user_id: DEFAULT_USER_ID })
           .select()
           .single()
 
@@ -117,7 +117,7 @@ export default function ScholarshipForm({ scholarship, initialData, onClose, onS
       if (selectedReminders.length > 0) {
         const reminders = selectedReminders.map(days => ({
           scholarship_id: scholarshipId,
-          user_id: user.id,
+          user_id: DEFAULT_USER_ID,
           days_before: days,
           scheduled_for: new Date(deadline.getTime() - days * 24 * 60 * 60 * 1000).toISOString(),
         }))
@@ -137,30 +137,30 @@ export default function ScholarshipForm({ scholarship, initialData, onClose, onS
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-primary-800 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-primary-800 px-6 py-4 border-b border-primary-700 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-white">
+      <div className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="sticky top-0 bg-white px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-900">
             {scholarship ? 'Modifier la bourse' : 'Nouvelle bourse'}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-primary-700 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-primary-300" />
+            <X className="w-5 h-5 text-gray-500" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-primary-200 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Titre *
             </label>
             <input
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full px-4 py-2.5 bg-primary-900/50 border border-primary-600 rounded-lg text-white placeholder-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
               placeholder="Titre de la bourse"
               required
             />
@@ -168,27 +168,27 @@ export default function ScholarshipForm({ scholarship, initialData, onClose, onS
 
           {/* Organization */}
           <div>
-            <label className="block text-sm font-medium text-primary-200 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Organisme
             </label>
             <input
               type="text"
               value={formData.organization}
               onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
-              className="w-full px-4 py-2.5 bg-primary-900/50 border border-primary-600 rounded-lg text-white placeholder-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
               placeholder="Nom de l'organisme"
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-primary-200 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Description
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-4 py-2.5 bg-primary-900/50 border border-primary-600 rounded-lg text-white placeholder-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white resize-none"
               placeholder="Description de la bourse"
               rows={3}
             />
@@ -196,16 +196,16 @@ export default function ScholarshipForm({ scholarship, initialData, onClose, onS
 
           {/* Deadline */}
           <div>
-            <label className="block text-sm font-medium text-primary-200 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Deadline *
             </label>
             <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-primary-400" />
+              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="datetime-local"
                 value={formData.deadline}
                 onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                className="w-full pl-10 pr-4 py-2.5 bg-primary-900/50 border border-primary-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
                 required
               />
             </div>
@@ -213,7 +213,7 @@ export default function ScholarshipForm({ scholarship, initialData, onClose, onS
 
           {/* Status */}
           <div>
-            <label className="block text-sm font-medium text-primary-200 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Statut
             </label>
             <div className="flex flex-wrap gap-2">
@@ -225,7 +225,7 @@ export default function ScholarshipForm({ scholarship, initialData, onClose, onS
                   className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
                     formData.status === option.value
                       ? `${option.color} text-white`
-                      : 'bg-primary-700 text-primary-300 hover:bg-primary-600'
+                      : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                   }`}
                 >
                   {option.label}
@@ -236,35 +236,35 @@ export default function ScholarshipForm({ scholarship, initialData, onClose, onS
 
           {/* Reference Links */}
           <div>
-            <label className="block text-sm font-medium text-primary-200 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Liens de référence
             </label>
             <div className="space-y-2">
               {formData.reference_links.map((link, index) => (
                 <div key={index} className="flex gap-2">
                   <div className="relative flex-1">
-                    <LinkIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary-400" />
+                    <LinkIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <input
                       type="url"
                       value={link}
                       onChange={(e) => handleLinkChange(index, e.target.value)}
-                      className="w-full pl-9 pr-4 py-2 bg-primary-900/50 border border-primary-600 rounded-lg text-white placeholder-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                      className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-sm"
                       placeholder="https://..."
                     />
                   </div>
                   <button
                     type="button"
                     onClick={() => removeLink(index)}
-                    className="p-2 hover:bg-primary-700 rounded-lg transition-colors"
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                   >
-                    <Trash2 className="w-4 h-4 text-red-400" />
+                    <Trash2 className="w-4 h-4 text-red-500" />
                   </button>
                 </div>
               ))}
               <button
                 type="button"
                 onClick={addLink}
-                className="flex items-center gap-2 text-sm text-primary-300 hover:text-white transition-colors"
+                className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 Ajouter un lien
@@ -274,7 +274,7 @@ export default function ScholarshipForm({ scholarship, initialData, onClose, onS
 
           {/* Reminders */}
           <div>
-            <label className="block text-sm font-medium text-primary-200 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Rappels
             </label>
             <div className="flex flex-wrap gap-2">
@@ -285,8 +285,8 @@ export default function ScholarshipForm({ scholarship, initialData, onClose, onS
                   onClick={() => toggleReminder(option.days)}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
                     selectedReminders.includes(option.days)
-                      ? 'bg-yellow-500 text-primary-900'
-                      : 'bg-primary-700 text-primary-300 hover:bg-primary-600'
+                      ? 'bg-yellow-400 text-gray-900'
+                      : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                   }`}
                 >
                   {option.label}
@@ -297,13 +297,13 @@ export default function ScholarshipForm({ scholarship, initialData, onClose, onS
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium text-primary-200 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Notes
             </label>
             <textarea
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              className="w-full px-4 py-2.5 bg-primary-900/50 border border-primary-600 rounded-lg text-white placeholder-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white resize-none"
               placeholder="Notes personnelles"
               rows={2}
             />
@@ -314,14 +314,14 @@ export default function ScholarshipForm({ scholarship, initialData, onClose, onS
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 bg-primary-700 hover:bg-primary-600 text-white font-medium rounded-lg transition-colors"
+              className="flex-1 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition-colors"
             >
               Annuler
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 py-2.5 bg-primary-600 hover:bg-primary-500 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+              className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
