@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import Auth from '@/components/Auth'
 import Dashboard from '@/pages/Dashboard'
 import Share from '@/pages/Share'
+import Profile from '@/pages/Profile'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, loading } = useAuth()
@@ -45,6 +46,14 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <Share />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <PrivateRoute>
+            <Profile />
           </PrivateRoute>
         }
       />

@@ -27,7 +27,6 @@ export interface Profile {
   id: string
   updated_at: string
   full_name: string | null
-  telegram_chat_id: string | null
 }
 
 export interface ScholarshipInsert {

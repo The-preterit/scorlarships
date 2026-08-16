@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Search, Plus, LogOut, GraduationCap, Filter } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Search, Plus, LogOut, GraduationCap, Filter, RefreshCw, User } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { Scholarship, ScholarshipStatus } from '@/types/database'
@@ -15,6 +16,7 @@ const FILTER_OPTIONS: { value: ScholarshipStatus | 'all'; label: string }[] = [
 ]
 
 export default function Dashboard() {
+  const navigate = useNavigate()
   const { signOut } = useAuth()
   const [scholarships, setScholarships] = useState<Scholarship[]>([])
   const [loading, setLoading] = useState(true)
@@ -95,13 +97,22 @@ export default function Dashboard() {
                 <p className="text-xs text-gray-500">{stats.total} bourses</p>
               </div>
             </div>
-            <button
-              onClick={signOut}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              title="Déconnexion"
-            >
-              <LogOut className="w-5 h-5 text-gray-600" />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => navigate('/profile')}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                title="Profil"
+              >
+                <User className="w-5 h-5 text-gray-600" />
+              </button>
+              <button
+                onClick={signOut}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                title="Déconnexion"
+              >
+                <LogOut className="w-5 h-5 text-gray-600" />
+              </button>
+            </div>
           </div>
 
           {/* Search & Filter */}
@@ -123,6 +134,14 @@ export default function Dashboard() {
               }`}
             >
               <Filter className="w-5 h-5" />
+            </button>
+            <button
+              onClick={fetchScholarships}
+              disabled={loading}
+              className="p-2 rounded-lg transition-colors bg-gray-100 hover:bg-gray-200 text-gray-600 disabled:opacity-50"
+              title="Rafraîchir"
+            >
+              <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
             </button>
           </div>
 

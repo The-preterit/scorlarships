@@ -13,7 +13,7 @@ export default function Auth() {
     setError(null)
     setLoading(true)
 
-    const success = signIn(code)
+    const success = await signIn(code)
     if (!success) {
       setError('Code secret incorrect')
     }
