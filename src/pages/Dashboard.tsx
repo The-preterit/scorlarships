@@ -5,7 +5,6 @@ import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { Scholarship, ScholarshipStatus } from '@/types/database'
 import ScholarshipCard from '@/components/ScholarshipCard'
-import ScholarshipForm from '@/components/ScholarshipForm'
 
 const FILTER_OPTIONS: { value: ScholarshipStatus | 'all'; label: string }[] = [
   { value: 'all', label: 'Toutes' },
@@ -22,8 +21,6 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<ScholarshipStatus | 'all'>('all')
-  const [showForm, setShowForm] = useState(false)
-  const [editingScholarship, setEditingScholarship] = useState<Scholarship | undefined>()
   const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
@@ -43,19 +40,6 @@ export default function Dashboard() {
       console.error('Error fetching scholarships:', error)
     } finally {
       setLoading(false)
-    }
-  }
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette bourse ?')) return
-
-    try {
-      const { error } = await supabase.from('scholarships').delete().eq('id', id)
-      if (error) throw error
-      setScholarships(scholarships.filter(s => s.id !== id))
-    } catch (error) {
-      console.error('Error deleting scholarship:', error)
-      alert('Erreur lors de la suppression')
     }
   }
 
@@ -185,7 +169,7 @@ export default function Dashboard() {
             </p>
             {!searchQuery && statusFilter === 'all' && (
               <button
-                onClick={() => setShowForm(true)}
+                onClick={() => navigate('/create')}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
               >
                 <Plus className="w-4 h-4" />
@@ -199,11 +183,6 @@ export default function Dashboard() {
               <ScholarshipCard
                 key={scholarship.id}
                 scholarship={scholarship}
-                onEdit={() => {
-                  setEditingScholarship(scholarship)
-                  setShowForm(true)
-                }}
-                onDelete={() => handleDelete(scholarship.id)}
               />
             ))}
           </div>
@@ -212,27 +191,11 @@ export default function Dashboard() {
 
       {/* FAB */}
       <button
-        onClick={() => setShowForm(true)}
+        onClick={() => navigate('/create')}
         className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all z-50"
       >
         <Plus className="w-6 h-6" />
       </button>
-
-      {/* Form Modal */}
-      {showForm && (
-        <ScholarshipForm
-          scholarship={editingScholarship}
-          onClose={() => {
-            setShowForm(false)
-            setEditingScholarship(undefined)
-          }}
-          onSave={() => {
-            setShowForm(false)
-            setEditingScholarship(undefined)
-            fetchScholarships()
-          }}
-        />
-      )}
     </div>
   )
 }

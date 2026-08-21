@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import Auth from '@/components/Auth'
 import Dashboard from '@/pages/Dashboard'
+import CreateScholarship from '@/pages/CreateScholarship'
+import ScholarshipDetail from '@/pages/ScholarshipDetail'
 import Share from '@/pages/Share'
 import Profile from '@/pages/Profile'
 
@@ -38,6 +40,22 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <Dashboard />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/create"
+        element={
+          <PrivateRoute>
+            <CreateScholarship />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/scholarship/:id"
+        element={
+          <PrivateRoute>
+            <ScholarshipDetail />
           </PrivateRoute>
         }
       />

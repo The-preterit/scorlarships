@@ -1,10 +1,9 @@
-import { Calendar, ExternalLink, Edit, Trash2, Clock } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Calendar, Clock, ChevronRight } from 'lucide-react'
 import { Scholarship } from '@/types/database'
 
 interface ScholarshipCardProps {
   scholarship: Scholarship
-  onEdit: () => void
-  onDelete: () => void
 }
 
 const STATUS_COLORS = {
@@ -55,75 +54,44 @@ function formatDate(date: string): string {
   })
 }
 
-export default function ScholarshipCard({ scholarship, onEdit, onDelete }: ScholarshipCardProps) {
+export default function ScholarshipCard({ scholarship }: ScholarshipCardProps) {
+  const navigate = useNavigate()
   const status = STATUS_COLORS[scholarship.status]
   const { text: timeText, urgent } = getTimeRemaining(scholarship.deadline)
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4 hover:border-blue-300 hover:shadow-md transition-all">
+    <div 
+      onClick={() => navigate(`/scholarship/${scholarship.id}`)}
+      className="bg-white border border-gray-200 rounded-xl p-4 hover:border-blue-300 hover:shadow-md transition-all cursor-pointer active:scale-[0.98]"
+    >
       <div className="flex items-start justify-between mb-3">
-        <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">{scholarship.title}</h3>
+        <div className="flex-1 pr-3">
+          <h3 className="text-base font-semibold text-gray-900 mb-1 line-clamp-1">{scholarship.title}</h3>
           {scholarship.organization && (
-            <p className="text-sm text-gray-500">{scholarship.organization}</p>
+            <p className="text-sm text-gray-500 line-clamp-1">{scholarship.organization}</p>
           )}
         </div>
-        <span className={`${status.bg} text-white text-xs px-2 py-1 rounded-full`}>
-          {status.text}
-        </span>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className={`${status.bg} text-white text-xs px-2 py-1 rounded-full`}>
+            {status.text}
+          </span>
+          <ChevronRight className="w-4 h-4 text-gray-400" />
+        </div>
       </div>
 
       {scholarship.description && (
         <p className="text-sm text-gray-600 mb-3 line-clamp-2">{scholarship.description}</p>
       )}
 
-      <div className="flex items-center gap-4 mb-3">
-        <div className="flex items-center gap-1.5 text-sm">
-          <Calendar className="w-4 h-4 text-gray-400" />
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 text-xs">
+          <Calendar className="w-3.5 h-3.5 text-gray-400" />
           <span className="text-gray-600">{formatDate(scholarship.deadline)}</span>
         </div>
-        <div className={`flex items-center gap-1.5 text-sm ${urgent ? 'text-orange-600 font-medium' : 'text-gray-600'}`}>
-          <Clock className="w-4 h-4" />
+        <div className={`flex items-center gap-1.5 text-xs ${urgent ? 'text-orange-600 font-medium' : 'text-gray-600'}`}>
+          <Clock className="w-3.5 h-3.5" />
           <span>{timeText}</span>
         </div>
-      </div>
-
-      {scholarship.reference_links.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-3">
-          {scholarship.reference_links.map((link, index) => (
-            <a
-              key={index}
-              href={link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
-            >
-              <ExternalLink className="w-3 h-3" />
-              Lien {index + 1}
-            </a>
-          ))}
-        </div>
-      )}
-
-      {scholarship.notes && (
-        <p className="text-xs text-gray-500 mb-3 italic line-clamp-1">{scholarship.notes}</p>
-      )}
-
-      <div className="flex gap-2 pt-2 border-t border-gray-200">
-        <button
-          onClick={onEdit}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
-        >
-          <Edit className="w-4 h-4" />
-          Modifier
-        </button>
-        <button
-          onClick={onDelete}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all"
-        >
-          <Trash2 className="w-4 h-4" />
-          Supprimer
-        </button>
       </div>
     </div>
   )
