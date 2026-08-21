@@ -10,7 +10,7 @@ interface FormData {
   title: string
   organization: string
   description: string
-  education_level: EducationLevel | ''
+  education_level: EducationLevel | null
   destination_country: string
   host_organization: string
   deadline: string
@@ -46,7 +46,7 @@ export default function CreateScholarship() {
     title: '',
     organization: '',
     description: '',
-    education_level: '',
+    education_level: null,
     destination_country: '',
     host_organization: '',
     deadline: '',
@@ -84,7 +84,7 @@ export default function CreateScholarship() {
       case 2:
         return formData.deadline !== ''
       case 3:
-        return formData.status !== ''
+        return formData.status !== null && formData.status !== undefined
       default:
         return false
     }
@@ -259,7 +259,9 @@ export default function CreateScholarship() {
                     <button
                       key={level.value}
                       type="button"
-                      onClick={() => updateForm({ education_level: level.value as EducationLevel })}
+                      onClick={() => updateForm({ 
+                        education_level: formData.education_level === level.value ? null : level.value as EducationLevel 
+                      })}
                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                         formData.education_level === level.value
                           ? 'bg-blue-600 text-white'
